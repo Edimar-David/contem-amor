@@ -699,38 +699,81 @@ h3 {
 }
 
 .category-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
   flex: 0 0 auto;
+  width: 68px;
 
-  min-height: 38px;
-  padding: 0 17px;
+  border: none;
+  background: transparent;
 
-  border: 1px solid var(--color-border);
-
-  border-radius: var(--radius-pill);
-
-  background: var(--color-surface);
   color: var(--color-text-muted);
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 
+  transition: color var(--transition-fast);
+}
+
+.category-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 56px;
+  height: 56px;
+
+  overflow: hidden;
+
+  border: 2px solid transparent;
+  border-radius: 50%;
+
+  background: var(--color-surface-soft);
+
   transition:
-    background var(--transition-fast),
-    color var(--transition-fast),
     border-color var(--transition-fast),
     transform var(--transition-fast);
 }
 
+.category-icon img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.category-icon-fallback {
+  display: none;
+
+  font-size: 24px;
+}
+
+.category-icon--fallback .category-icon-fallback {
+  display: block;
+}
+
+.category-label {
+  white-space: nowrap;
+}
+
+.category-chip:hover .category-icon {
+  transform: translateY(-2px);
+}
+
 .category-chip:hover {
-  border-color: var(--color-primary-light);
   color: var(--color-primary);
-  transform: translateY(-1px);
 }
 
 .category-chip--active {
+  color: var(--color-primary);
+}
+
+.category-chip--active .category-icon {
   border-color: var(--color-primary);
-  background: var(--color-primary);
-  color: #fff;
 
   box-shadow: 0 6px 16px rgba(126, 31, 46, 0.15);
 }
@@ -770,13 +813,27 @@ h3 {
 }
 
 .menu-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
+  display: flex;
+  gap: 16px;
+
+  margin: 0 calc(var(--page-padding) * -1);
+  padding: 6px var(--page-padding) 10px;
+  padding-inline: 11%;
+
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 11%;
+
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.menu-grid::-webkit-scrollbar {
+  display: none;
 }
 
 .menu-empty {
-  grid-column: 1 / -1;
+  flex: 1 1 auto;
 
   padding: 50px 20px;
 
@@ -793,6 +850,77 @@ h3 {
 
 
 /* =========================================================
+   14b. CARROSSEL — SETAS E DOTS
+   ========================================================= */
+
+.menu-carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+
+  margin-top: 22px;
+}
+
+.carousel-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+
+  background: var(--color-surface);
+  color: var(--color-text);
+
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.carousel-arrow:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  flex: 0 0 auto;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--color-border);
+
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.carousel-dot--active {
+  width: 22px;
+
+  border-radius: var(--radius-pill);
+
+  background: var(--color-primary);
+}
+
+
+/* =========================================================
    15. PRODUCT CARD
    ========================================================= */
 
@@ -801,6 +929,9 @@ h3 {
 
   display: flex;
   flex-direction: column;
+
+  flex: 0 0 78%;
+  scroll-snap-align: center;
 
   overflow: hidden;
 
@@ -1643,8 +1774,15 @@ h3 {
   }
 
   .menu-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
+    margin-inline: 0;
+    padding-inline: 0;
+    scroll-padding-inline: 0;
+  }
+
+  .product-card {
+    flex-basis: 46%;
+    scroll-snap-align: start;
   }
 
   .trust-list {
@@ -1759,8 +1897,13 @@ h3 {
   }
 
   .menu-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 22px;
+    padding-inline: 0;
+    scroll-padding-inline: 0;
+  }
+
+  .product-card {
+    flex-basis: 31%;
   }
 
   .product-body {
@@ -1814,6 +1957,10 @@ h3 {
 
   .product-card {
     border-radius: var(--radius-lg);
+  }
+
+  .menu-empty {
+    flex-basis: 40%;
   }
 }
 

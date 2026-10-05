@@ -1,7 +1,15 @@
 import { PRODUCTS, CATEGORIES } from '../data/products.js';
 import { Cart } from './cart.js';
 import { openWhatsAppWithCart, buildWhatsAppUrl, buildEmptyCartMessage } from './whatsapp.js';
-import { renderCategories, renderProducts, updateProductControls, renderCartItems, showToast, formatPrice } from './ui.js';
+import {
+  renderCategories,
+  renderProducts,
+  updateProductControls,
+  renderCartItems,
+  renderCarouselDots,
+  showToast,
+  formatPrice,
+} from './ui.js';
 
 const cart = new Cart(PRODUCTS);
 let activeCategory = 'todos';
@@ -11,6 +19,9 @@ const els = {
   heroSentinel: document.getElementById('heroSentinel'),
   categoriesTrack: document.getElementById('categoriesTrack'),
   menuGrid: document.getElementById('menuGrid'),
+  menuDots: document.getElementById('menuDots'),
+  menuPrev: document.getElementById('menuPrev'),
+  menuNext: document.getElementById('menuNext'),
   headerWhatsapp: document.getElementById('headerWhatsapp'),
   ctaWhatsapp: document.getElementById('ctaWhatsapp'),
   footerWhatsapp: document.getElementById('footerWhatsapp'),
@@ -54,12 +65,76 @@ const productHandlers = {
 
 function renderMenu() {
   renderProducts(els.menuGrid, getVisibleProducts(), cart, productHandlers);
+  els.menuGrid.scrollTo({ left: 0 });
+  updateMenuCarousel();
 }
 
 function setActiveCategory(id) {
   activeCategory = id;
   renderCategories(els.categoriesTrack, CATEGORIES, activeCategory, setActiveCategory);
   renderMenu();
+}
+
+function getActiveCardIndex(cards) {
+  if (!cards.length) return 0;
+  const center = els.menuGrid.scrollLeft + els.menuGrid.clientWidth / 2;
+  let closestIndex = 0;
+  let closestDistance = Infinity;
+
+  cards.forEach((card, i) => {
+    const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+    const distance = Math.abs(cardCenter - center);
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestIndex = i;
+    }
+  });
+
+  return closestIndex;
+}
+
+function goToCard(index) {
+  const cards = Array.from(els.menuGrid.children);
+  const card = cards[index];
+  if (!card) return;
+  els.menuGrid.scrollTo({
+    left: card.offsetLeft - (els.menuGrid.clientWidth - card.offsetWidth) / 2,
+    behavior: 'smooth',
+  });
+}
+
+function updateMenuCarousel() {
+  if (!els.menuDots) return;
+  const cards = Array.from(els.menuGrid.children).filter((el) => el.classList.contains('product-card'));
+  renderCarouselDots(els.menuDots, cards.length, getActiveCardIndex(cards), goToCard);
+}
+
+function setupMenuCarousel() {
+  if (!els.menuGrid) return;
+
+  let ticking = false;
+  els.menuGrid.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      updateMenuCarousel();
+      ticking = false;
+    });
+  });
+
+  if (els.menuPrev) {
+    els.menuPrev.addEventListener('click', () => {
+      const cards = Array.from(els.menuGrid.children);
+      goToCard(Math.max(0, getActiveCardIndex(cards) - 1));
+    });
+  }
+
+  if (els.menuNext) {
+    els.menuNext.addEventListener('click', () => {
+      const cards = Array.from(els.menuGrid.children);
+      goToCard(Math.min(cards.length - 1, getActiveCardIndex(cards) + 1));
+    });
+  }
 }
 
 function openCart() {
@@ -130,6 +205,7 @@ function setupWhatsAppLinks() {
 function init() {
   setupWhatsAppLinks();
   setupHeaderScroll();
+  setupMenuCarousel();
   setActiveCategory('todos');
 
   cart.onChange(updateCartUI);

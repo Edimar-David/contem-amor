@@ -15,12 +15,12 @@
  */
 
 export const CATEGORIES = [
-  { id: 'todos', label: 'Todos' },
-  { id: 'cookies', label: 'Cookies' },
-  { id: 'biscoitos', label: 'Biscoitos' },
-  { id: 'casadinhos', label: 'Casadinhos' },
-  { id: 'amanteigados', label: 'Amanteigados' },
-  { id: 'kits', label: 'Kits/Presentes' },
+  { id: 'todos', label: 'Todos', image: null },
+  { id: 'cookies', label: 'Cookies', image: 'assets/images/categories/cookies.png' },
+  { id: 'biscoitos', label: 'Biscoitos', image: 'assets/images/categories/biscoitos.png' },
+  { id: 'casadinhos', label: 'Casadinhos', image: 'assets/images/categories/casadinhos.png' },
+  { id: 'amanteigados', label: 'Amanteigados', image: 'assets/images/categories/amanteigados.png' },
+  { id: 'kits', label: 'Kits/Presentes', image: 'assets/images/categories/kits.png' },
 ];
 
 export const PRODUCTS = [

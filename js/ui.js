@@ -22,6 +22,25 @@ function productImageMarkup(product) {
   `;
 }
 
+function categoryIconMarkup(cat) {
+  if (!cat.image) {
+    return `<span class="category-icon-fallback" aria-hidden="true">🍪</span>`;
+  }
+
+  return `
+    <img
+      src="${cat.image}"
+      alt=""
+      width="56"
+      height="56"
+      loading="lazy"
+      decoding="async"
+      onerror="this.closest('.category-icon').classList.add('category-icon--fallback'); this.remove();"
+    />
+    <span class="category-icon-fallback" aria-hidden="true">🍪</span>
+  `;
+}
+
 export function renderCategories(container, categories, activeId, onSelect) {
   container.innerHTML = categories
     .map(
@@ -32,7 +51,10 @@ export function renderCategories(container, categories, activeId, onSelect) {
         data-category="${cat.id}"
         role="tab"
         aria-selected="${cat.id === activeId}"
-      >${cat.label}</button>
+      >
+        <span class="category-icon${cat.image ? '' : ' category-icon--fallback'}">${categoryIconMarkup(cat)}</span>
+        <span class="category-label">${cat.label}</span>
+      </button>
     `
     )
     .join('');
@@ -125,6 +147,32 @@ export function renderCartItems(container, items) {
     `
     )
     .join('');
+}
+
+export function renderCarouselDots(container, count, activeIndex, onSelect) {
+  if (count <= 1) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = Array.from({ length: count })
+    .map(
+      (_, i) => `
+      <button
+        type="button"
+        class="carousel-dot${i === activeIndex ? ' carousel-dot--active' : ''}"
+        data-index="${i}"
+        role="tab"
+        aria-selected="${i === activeIndex}"
+        aria-label="Ir para o item ${i + 1}"
+      ></button>
+    `
+    )
+    .join('');
+
+  container.querySelectorAll('.carousel-dot').forEach((btn) => {
+    btn.addEventListener('click', () => onSelect(Number(btn.dataset.index)));
+  });
 }
 
 export function showToast(el, message) {
